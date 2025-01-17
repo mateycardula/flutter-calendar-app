@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/exam.dart';
+import '../cards/exam_card.dart';
 import '../screens/exam_details_screen.dart';
 
 class ExamGrid extends StatelessWidget {
@@ -29,24 +30,7 @@ class ExamGrid extends StatelessWidget {
               ),
             );
           },
-          child: Card(
-            elevation: 4.0,
-            margin: EdgeInsets.all(8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exam.courseName,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  SizedBox(height: 8.0),
-                  Text('Exam on: ${exam.examDate.toLocal().toString().split(' ')[0]}'),
-                ],
-              ),
-            ),
-          ),
+          child: ExamCard(exam: exam), // Use the ExamCard widget here
         );
       },
     );
