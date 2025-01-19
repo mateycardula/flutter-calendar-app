@@ -7,35 +7,35 @@ class LocationProvider with ChangeNotifier {
       building: 'Engineering Block',
       floor: '1st Floor',
       name: 'Room 101',
-      latitude: 40.7128,
-      longitude: -74.0060,
+      latitude: 41.9981,
+      longitude: 21.4254,
       id: '0',
     ),
     Location(
       building: 'Science Block',
       floor: '2nd Floor',
       name: 'Room 202',
-      latitude: 34.0522,
-      longitude: -118.2437,
+      latitude: 41.9990,
+      longitude: 21.4270,
       id: '1',
     ),
     Location(
       building: 'Library',
       floor: 'Ground Floor',
       name: 'Study Hall',
-      latitude: 51.5074,
-      longitude: -0.1278,
+      latitude: 42.0005,
+      longitude: 21.4265,
       id: '2',
     ),
     Location(
       building: 'Administration',
       floor: '3rd Floor',
       name: 'Conference Room',
-      latitude: 48.8566,
-      longitude: 2.3522,
+      latitude: 41.9955,
+      longitude: 21.4240,
       id: '3',
     ),
-    // More mock locations...
+    // Add more mock locations if needed
   ];
 
   Location getLocationById(String locationId) {

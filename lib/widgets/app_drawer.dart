@@ -33,6 +33,13 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.location_on),
+            title: Text('Map'),
+            onTap: () {
+              navigationService.replaceWith('/map'); // Navigate to Locations
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.location_on),
             title: Text('Locations'),
             onTap: () {
               navigationService.replaceWith('/locations'); // Navigate to Locations

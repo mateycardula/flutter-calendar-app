@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Exam Schedule'),
       ),
-      drawer: AppDrawer(navigationService: widget.navigationService), // Use navigationService here
+      drawer: AppDrawer(navigationService: widget.navigationService),
       body: Column(
         children: [
           CalendarWidget(

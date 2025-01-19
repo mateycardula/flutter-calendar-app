@@ -21,17 +21,15 @@ class LocationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Location Name (title)
             Text(
               location.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
-            // Building and Floor
             Text(
               'Building: ${location.building}',
               style: TextStyle(
@@ -46,8 +44,7 @@ class LocationCard extends StatelessWidget {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 8),
-
+            const SizedBox(height: 8),
           ],
         ),
       ),

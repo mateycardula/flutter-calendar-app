@@ -1,5 +1,6 @@
 import 'package:exams/services/providers/exam_provider.dart';
 import 'package:exams/services/providers/locations_provider.dart';
+import 'package:exams/widgets/screens/map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/navigation_service.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/home': (context) => HomeScreen(navigationService: navigationService), // Inject NavigationService
           '/locations': (context) => LocationScreen(navigationService: navigationService), // Inject NavigationService
-          // Add more routes here
+          '/map': (context) => LocationMapScreen()
         },
       ),
     );
