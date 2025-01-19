@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/home': (context) => HomeScreen(navigationService: navigationService), // Inject NavigationService
           '/locations': (context) => LocationScreen(navigationService: navigationService), // Inject NavigationService
-          '/map': (context) => LocationMapScreen()
+          '/map': (context) => LocationMapScreen(navigationService: navigationService,)
         },
       ),
     );

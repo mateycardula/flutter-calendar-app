@@ -35,7 +35,6 @@ class LocationProvider with ChangeNotifier {
       longitude: 21.4240,
       id: '3',
     ),
-    // Add more mock locations if needed
   ];
 
   Location getLocationById(String locationId) {

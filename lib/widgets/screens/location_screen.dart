@@ -23,7 +23,6 @@ class LocationScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        // Use the locations from the provider
         child: LocationGrid(locations: locationProvider.locations),
       ),
     );

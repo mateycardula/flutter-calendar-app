@@ -9,7 +9,7 @@ class MapService {
     required List<Location> locations,
     Icon? icon,
   }) async {
-    final markerIcon = MarkerIcon(icon: icon ?? const Icon(Icons.location_on, size: 48, color: Colors.blue));
+    final markerIcon = MarkerIcon(icon: icon ?? const Icon(Icons.location_on, size: 36, color: Colors.blue));
     for (final loc in locations) {
       await controller.addMarker(
         GeoPoint(latitude: loc.latitude, longitude: loc.longitude),

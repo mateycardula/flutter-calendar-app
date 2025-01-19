@@ -13,13 +13,15 @@ class DefaultOSMConfig {
     ZoomOption? zoomOption,
   }) {
     return OSMOption(
+      showDefaultInfoWindow: false,
       showZoomController: showZoomController,
       userLocationMarker: UserLocationMaker(
         personMarker: MarkerIcon(
           icon: Icon(
             Icons.location_history,
             color: Colors.red,
-            size: 48,
+            size: 12,
+            opticalSize: 48,
           ),
         ),
         directionArrowMarker: MarkerIcon(
@@ -39,7 +41,6 @@ class DefaultOSMConfig {
             stepZoom: 1.0,
           ),
       enableRotationByGesture: enableRotationByGesture,
-      showDefaultInfoWindow: showDefaultInfoWindow,
       isPicker: isPicker,
       showContributorBadgeForOSM: showContributorBadge,
       staticPoints: const [], // Generally override if needed
