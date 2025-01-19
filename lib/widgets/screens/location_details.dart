@@ -38,10 +38,9 @@ class LocationDetailsScreen extends StatelessWidget {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Navigate to map screen, passing the selected location
                 Navigator.pushNamed(
                   context,
-                  '/map',  // We'll handle the map screen routing
+                  '/map',
                   arguments: location,
                 );
               },

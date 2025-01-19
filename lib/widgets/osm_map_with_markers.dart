@@ -1,47 +1,48 @@
-import 'package:collection/collection.dart';
 import 'package:exams/widgets/screens/location_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:collection/collection.dart';
 
 import '../../models/location.dart';
+import '../services/map_service.dart';
 import 'loading_overlay.dart';
 import 'location_popup.dart';
 
-class FlutterMapWithMarkers extends StatefulWidget {
+class FlutterMapWithRouting extends StatefulWidget {
   final List<Location> locations;
   final Location? focusLocation;
 
-  const FlutterMapWithMarkers({
+  const FlutterMapWithRouting({
     Key? key,
     required this.locations,
     this.focusLocation,
   }) : super(key: key);
 
   @override
-  _FlutterMapWithMarkersState createState() => _FlutterMapWithMarkersState();
+  _FlutterMapWithRoutingState createState() => _FlutterMapWithRoutingState();
 }
 
-class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
+class _FlutterMapWithRoutingState extends State<FlutterMapWithRouting> {
   final MapController _mapController = MapController();
   final PopupController _popupController = PopupController();
 
   bool _isLoading = true;
   bool _hasFocused = false;
 
-  // List of markers for your app's `Location`s + user marker
   late List<Marker> _markers;
-
-  // Store the user's location as a LatLng, if known
   LatLng? _userLatLng;
+  List<LatLng> _routePoints = [];
+
+  final MapService _mapService = MapService();
 
   @override
   void initState() {
     super.initState();
 
-    // Convert `Location` objects into `Marker`s
+    // Convert `Location` objects into markers
     _markers = widget.locations.map((loc) {
       return Marker(
         width: 40,
@@ -65,7 +66,6 @@ class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
     });
   }
 
-  // 1) Focus on either `focusLocation` or default to Skopje
   Future<void> _focusInitialLocation() async {
     setState(() => _isLoading = true);
 
@@ -84,35 +84,73 @@ class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
   Future<void> _getUserLocation() async {
     setState(() => _isLoading = true);
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      permission = await Geolocator.requestPermission();
+    try {
+      final userLocation = await _mapService.getCurrentLocation();
+      if (userLocation != null) {
+        setState(() {
+          _userLatLng = userLocation;
 
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        setState(() => _isLoading = false);
-        return;
+          // Add user marker
+          _markers.add(
+            Marker(
+              width: 40,
+              height: 40,
+              point: _userLatLng!,
+              child: const Icon(
+                Icons.person_pin_circle,
+                color: Colors.red,
+                size: 40,
+              ),
+            ),
+          );
+        });
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch user location: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _onNavigate(Location location) async {
+    if (_userLatLng == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User location is unknown')),
+      );
+      return;
     }
 
-    final position = await Geolocator.getCurrentPosition();
-    setState(() {
-      _userLatLng = LatLng(position.latitude, position.longitude);
-      _markers.add(
-        Marker(
-          width: 40,
-          height: 40,
-          point: _userLatLng!,
-          child: const Icon(
-            Icons.person_pin_circle,
-            color: Colors.red,
-            size: 40,
-          ),
-        ),
+    setState(() => _isLoading = true);
+
+    try {
+      final routePoints = await _mapService.getRoute(
+        _userLatLng!,
+        LatLng(location.latitude, location.longitude),
       );
-      _isLoading = false;
-    });
+
+      setState(() {
+        _routePoints = routePoints;
+
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch route: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _onOpenDetails(Location location) {
+    _popupController.hideAllPopups();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationDetailsScreen(location: location),
+      ),
+    );
   }
 
   void _centerOnUserLocation() {
@@ -125,12 +163,12 @@ class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
     _mapController.move(_userLatLng!, 16.0);
   }
 
-  // Build the map with markers and popups
   @override
   Widget build(BuildContext context) {
     return LoadingOverlay(
       isLoading: _isLoading,
       child: Scaffold(
+
         body: FlutterMap(
           mapController: _mapController,
           options: MapOptions(
@@ -140,26 +178,20 @@ class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
           children: [
             TileLayer(
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              subdomains: ['a','b','c'],
+              subdomains: const ['a', 'b', 'c'],
             ),
-
             MarkerLayer(
               markers: _markers,
             ),
-
             PopupMarkerLayer(
               options: PopupMarkerLayerOptions(
                 markers: _markers,
                 popupController: _popupController,
                 markerCenterAnimation: MarkerCenterAnimation(),
                 popupDisplayOptions: PopupDisplayOptions(
-                  builder: (BuildContext context, Marker marker) {
+                  builder: (context, marker) {
                     final location = _findLocationByMarker(marker);
-                    if (location == null) {
-
-                      return const SizedBox();
-                    }
-
+                    if (location == null) return const SizedBox();
                     return MarkerPopup(
                       location: location,
                       onNavigate: () => _onNavigate(location),
@@ -169,9 +201,17 @@ class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
                 ),
               ),
             ),
+            PolylineLayer(
+              polylines: [
+                Polyline(
+                  points: _routePoints,
+                  color: Colors.blue,
+                  strokeWidth: 4.0,
+                ),
+              ],
+            ),
           ],
         ),
-        // 4) A button to center on user location if available
         floatingActionButton: FloatingActionButton(
           onPressed: _centerOnUserLocation,
           child: const Icon(Icons.my_location),
@@ -181,30 +221,10 @@ class _FlutterMapWithMarkersState extends State<FlutterMapWithMarkers> {
   }
 
   Location? _findLocationByMarker(Marker marker) {
-    // If the marker's lat/lon matches a known location, return that
     return widget.locations.firstWhereOrNull(
           (loc) =>
       loc.latitude == marker.point.latitude &&
           loc.longitude == marker.point.longitude,
-    );
-  }
-
-  // Called when "Navigate" is tapped in the popup
-  void _onNavigate(Location location) {
-    _popupController.hideAllPopups();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Navigate to: ${location.name}')),
-    );
-  }
-
-  // Called when "Open Details" is tapped
-  void _onOpenDetails(Location location) {
-    _popupController.hideAllPopups();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LocationDetailsScreen(location: location),
-      ),
     );
   }
 }

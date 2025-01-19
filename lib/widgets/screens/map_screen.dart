@@ -22,7 +22,7 @@ class LocationMapScreen extends StatelessWidget {
         title: Text('Locations Map'),
       ),
       drawer: AppDrawer(navigationService: navigationService),
-      body: FlutterMapWithMarkers(
+      body: FlutterMapWithRouting(
         locations: locations,
         focusLocation: focusLocation,
       ),
