@@ -16,7 +16,7 @@ class ExamGrid extends StatelessWidget {
     return GridView.builder(
       itemCount: exams.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 1,
         childAspectRatio: 2,
       ),
       itemBuilder: (context, index) {

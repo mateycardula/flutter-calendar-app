@@ -14,7 +14,6 @@ class LocationMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Grab locations from the provider
     final locationProvider = Provider.of<LocationProvider>(context);
     final locations = locationProvider.locations;
 
@@ -23,7 +22,7 @@ class LocationMapScreen extends StatelessWidget {
         title: Text('Locations Map'),
       ),
       drawer: AppDrawer(navigationService: navigationService),
-      body: OSMMapWithMarkers(
+      body: FlutterMapWithMarkers(
         locations: locations,
         focusLocation: focusLocation,
       ),
